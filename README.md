@@ -5,7 +5,7 @@ A bookmarker menu to manage all your bookmarks in MPV, based on [mpv-bookmarker]
 
 ## Installation
 
-Copy `bookmarker.lua` to the scripts folder for mpv then add the following lines to `input.conf`
+Copy `bookmarker-menu.lua` to the scripts folder for mpv then add the following lines to `input.conf`
 
 ```
 B script_message bookmarker-menu
@@ -15,7 +15,7 @@ ctrl+b script_message bookmarker-quick-load
 
 The keys are only a suggestion, and can be changed to something else
 
-Open `bookmarker.lua` in a text editor, and you can easily change these settings:
+Open `bookmarker-menu.lua` in a text editor, and you can easily change these settings:
 
 ```lua
 -- Maximum number of characters for bookmark name
