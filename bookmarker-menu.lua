@@ -1,3 +1,5 @@
+-- // Bookmarker Menu v1.0.0 for mpv \\ --
+
 -- Maximum number of characters for bookmark name
 local maxChar = 100
 -- Number of bookmarks to be displayed per page
