@@ -1,9 +1,11 @@
--- // Bookmarker Menu v1.0.0 for mpv \\ --
+-- // Bookmarker Menu v1.0.1 for mpv \\ --
 
 -- Maximum number of characters for bookmark name
 local maxChar = 100
 -- Number of bookmarks to be displayed per page
 local bookmarksPerPage = 10
+-- Whether to close the Bookmarker menu after loading a bookmark
+local closeAfterLoad = true
 -- The filename for the bookmarks file
 local bookmarkerName = "bookmarker.json"
 -- The rate at which the bookmarker needs to refresh its interface, lower is more frequent
@@ -225,7 +227,7 @@ function getTime(pos)
   return string.format("%02d:%02d:%02d.%03d",hours,minutes,seconds,milliseconds)
 end
 
--- // Bookmark funtions \\ --
+-- // Bookmark functions \\ --
 
 -- Checks whether the specified bookmark exists
 function bookmarkExists(slot)
@@ -387,6 +389,7 @@ function jumpToBookmark(slot)
       else
         mp.commandv("loadfile", bookmark["path"], "replace", "start="..bookmark["pos"])
       end
+      if closeAfterLoad then abort("") end
     else
       abort("Can't find file for bookmark:\n" .. bookmark["name"])
     end
