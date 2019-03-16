@@ -1,4 +1,4 @@
--- // Bookmarker Menu v1.0.1 for mpv \\ --
+-- // Bookmarker Menu v1.0.2 for mpv \\ --
 
 -- Maximum number of characters for bookmark name
 local maxChar = 100
@@ -35,6 +35,7 @@ local controls = {
   r = function() mode="rename" typerStart() end,
   m = function() mode="move" moverStart() end,
   ENTER = function() jumpToBookmark(currentSlot) end,
+  KP_ENTER = function() jumpToBookmark(currentSlot) end,
   DEL = function() deleteBookmark(currentSlot) displayBookmarks() end
 }
 
@@ -58,10 +59,22 @@ end
 local typerControls = {
   ESC = function() typerExit() end,
   ENTER = function() typerCommit() end,
+  KP_ENTER = function() typerCommit() end,
   BS = function() typer("backspace") end,
   DEL = function() typer("delete") end,
   SPACE = function() typer(" ") end,
-  SHARP = function() typer("#") end
+  SHARP = function() typer("#") end,
+  KP0 = function() typer("0") end,
+  KP1 = function() typer("1") end,
+  KP2 = function() typer("2") end,
+  KP3 = function() typer("3") end,
+  KP4 = function() typer("4") end,
+  KP5 = function() typer("5") end,
+  KP6 = function() typer("6") end,
+  KP7 = function() typer("7") end,
+  KP8 = function() typer("8") end,
+  KP9 = function() typer("9") end,
+  KP_DEC = function() typer(".") end
 }
 
 -- All standard keys for the Typer
@@ -124,7 +137,8 @@ local moverControls = {
   LEFT = function() jumpPage(-1) displayBookmarks() end,
   s = function() addBookmark(mp.get_property("filename")) displayBookmarks() end,
   m = function() moverCommit() end,
-  ENTER = function() moverCommit() end
+  ENTER = function() moverCommit() end,
+  KP_ENTER = function() moverCommit() end
 }
 
 -- Function to activate the Mover
