@@ -1,4 +1,4 @@
-# Bookmarker for mpv
+# Bookmarker Menu for mpv v1.0.2
 
 A bookmarker menu to manage all your bookmarks in MPV. This script is based on [mpv-bookmarker](https://github.com/nimatrueway/mpv-bookmark-lua-script) and has been rewritten to include a bookmarker menu. All of the code has been written from scratch, aside from the general file/JSON management utilities.
 
