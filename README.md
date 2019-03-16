@@ -1,11 +1,12 @@
 # Bookmarker for mpv
-A bookmarker menu to manage all your bookmarks in MPV, based on [mpv-bookmarker](https://github.com/nimatrueway/mpv-bookmark-lua-script) but with a menu
 
-**Warning:** The bookmarks created with this script are not compatible with those created with [mpv-bookmarker](https://github.com/nimatrueway/mpv-bookmark-lua-script)
+A bookmarker menu to manage all your bookmarks in MPV. This script is based on [mpv-bookmarker](https://github.com/nimatrueway/mpv-bookmark-lua-script) and has been rewritten to include a bookmarker menu. All of the code has been written from scratch, aside from the general file/JSON management utilities.
+
+**Warning:** The bookmarks created with this script are not compatible with those created with [mpv-bookmarker](https://github.com/nimatrueway/mpv-bookmark-lua-script).
 
 ## Installation
 
-Copy `bookmarker-menu.lua` to the scripts folder for mpv then add the following lines to `input.conf`
+Copy `bookmarker-menu.lua` to the scripts folder for mpv then add the following lines to `input.conf`:
 
 ```
 B script_message bookmarker-menu
@@ -13,7 +14,7 @@ b script_message bookmarker-quick-save
 ctrl+b script_message bookmarker-quick-load
 ```
 
-The keys are only a suggestion, and can be changed to something else
+The keys are only a suggestion, and can be changed to something else.
 
 Open `bookmarker-menu.lua` in a text editor, and you can easily change these settings:
 
@@ -57,3 +58,7 @@ local bookmarksPerPage = 10
 * `s`: Save a bookmark of the current file and position
 * `UP/DOWN`: Navigate through the bookmarks on the current page
 * `LEFT/RIGHT`: Navigate through pages of bookmarks
+
+## Testing
+
+This has been tested on Windows. In theory, it should also work for Unix systems, but it hasn't been tested on those.
