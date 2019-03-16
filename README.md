@@ -23,6 +23,8 @@ Open `bookmarker-menu.lua` in a text editor, and you can easily change these set
 local maxChar = 100
 -- Number of bookmarks to be displayed per page
 local bookmarksPerPage = 10
+-- Whether to close the Bookmarker menu after loading a bookmark
+local closeAfterLoad = true
 ```
 
 ## Usage
