@@ -1,4 +1,4 @@
--- // Bookmarker Menu v1.0.2 for mpv \\ --
+-- // Bookmarker Menu v1.1.0 for mpv \\ --
 
 -- Maximum number of characters for bookmark name
 local maxChar = 100
@@ -26,17 +26,17 @@ local oldSlot = 0
 -- List of custom controls and their function
 local controls = {
   ESC = function() abort("") end,
-  DOWN = function() jumpSlot(1) displayBookmarks() end,
-  UP = function() jumpSlot(-1) displayBookmarks() end,
-  RIGHT = function() jumpPage(1) displayBookmarks() end,
-  LEFT = function() jumpPage(-1) displayBookmarks() end,
-  s = function() addBookmark(mp.get_property("filename")) displayBookmarks() end,
+  DOWN = function() jumpSlot(1) end,
+  UP = function() jumpSlot(-1) end,
+  RIGHT = function() jumpPage(1) end,
+  LEFT = function() jumpPage(-1) end,
+  s = function() addBookmark() end,
   S = function() mode="save" typerStart() end,
   r = function() mode="rename" typerStart() end,
   m = function() mode="move" moverStart() end,
   ENTER = function() jumpToBookmark(currentSlot) end,
   KP_ENTER = function() jumpToBookmark(currentSlot) end,
-  DEL = function() deleteBookmark(currentSlot) displayBookmarks() end
+  DEL = function() deleteBookmark(currentSlot) end
 }
 
 -- Activate the custom controls
@@ -131,11 +131,11 @@ end
 -- Controls for the Mover
 local moverControls = {
   ESC = function() moverExit() end,
-  DOWN = function() jumpSlot(1) displayBookmarks() end,
-  UP = function() jumpSlot(-1) displayBookmarks() end,
-  RIGHT = function() jumpPage(1) displayBookmarks() end,
-  LEFT = function() jumpPage(-1) displayBookmarks() end,
-  s = function() addBookmark(mp.get_property("filename")) displayBookmarks() end,
+  DOWN = function() jumpSlot(1) end,
+  UP = function() jumpSlot(-1) end,
+  RIGHT = function() jumpPage(1) end,
+  LEFT = function() jumpPage(-1) end,
+  s = function() addBookmark() end,
   m = function() moverCommit() end,
   ENTER = function() moverCommit() end,
   KP_ENTER = function() moverCommit() end
@@ -208,28 +208,28 @@ end
 -- Load a table from a JSON file
 -- Returns nil if the file can't be found
 function loadTable(path)
-    local contents = ""
-    local myTable = {}
-    local file = io.open( path, "r" )
-    if file then
-        local contents = file:read( "*a" )
-        myTable = utils.parse_json(contents);
-        io.close(file)
-        return myTable
-    end
-    return nil
+  local contents = ""
+  local myTable = {}
+  local file = io.open( path, "r" )
+  if file then
+    local contents = file:read( "*a" )
+    myTable = utils.parse_json(contents);
+    io.close(file)
+    return myTable
+  end
+  return nil
 end
 
 -- Save a table as a JSON file file
 -- Returns true if successful
 function saveTable(t, path)
-    local contents = utils.format_json(t)
-    local file = io.open(path .. ".tmp", "wb")
-    file:write(contents)
-    io.close(file)
-    os.remove(path)
-    os.rename(path .. ".tmp", path)
-    return true
+  local contents = utils.format_json(t)
+  local file = io.open(path .. ".tmp", "wb")
+  file:write(contents)
+  io.close(file)
+  os.remove(path)
+  os.rename(path .. ".tmp", path)
+  return true
 end
 
 -- Convert a pos (seconds) to a hh:mm:ss.mmm format
@@ -296,6 +296,8 @@ function jumpSlot(i)
     table.remove(bookmarks, oldSlot)
     table.insert(bookmarks, currentSlot, bookmarkStore)
   end
+
+  displayBookmarks()
 end
 
 -- Jumps a certain amount of pages forward or backwards in the bookmarks list
@@ -319,6 +321,20 @@ function jumpPage(i)
     table.remove(bookmarks, oldSlot)
     table.insert(bookmarks, currentSlot, bookmarkStore)
   end
+
+  displayBookmarks()
+end
+
+-- Parses a bookmark name
+-- Replaces %t with the timestamp of the bookmark
+-- Replaces %p with the time position of the bookmark
+function parseName(name)
+  local pos = 0
+  if mode == "rename" then pos = bookmarks[currentSlot]["pos"] else pos = mp.get_property_number("time-pos") end
+  name, _ = name:gsub("%%t", getTime(pos))
+  name, _ = name:gsub("%%p", pos)
+  if name:len() > maxChar then name = name:sub(1,maxChar) end
+  return name
 end
 
 -- Loads all the bookmarks in the global table and sets the current page and total number of pages
@@ -339,26 +355,31 @@ end
 -- Add the current position as a bookmark to the global table and then saves it
 -- Returns the slot of the newly added bookmark
 function addBookmark(bname)
-  if bname:len() > maxChar then bname = bname:sub(1,maxChar) end
-  local bookmark = {
-    name = bname,
-    pos = mp.get_property_number("time-pos"),
-    path = mp.get_property("path")
-  }
-  table.insert(bookmarks, bookmark)
-
-  if #bookmarks == 1 then currentSlot = 1 end
-
-  calcPages()
-  saveBookmarks()
-  return #bookmarks
+  if mp.get_property("path") ~= nil then
+    if bname == nil then bname = mp.get_property("filename").." @ %t" end
+    local bookmark = {
+      name = parseName(bname),
+      pos = mp.get_property_number("time-pos"),
+      path = mp.get_property("path")
+    }
+    table.insert(bookmarks, bookmark)
+  
+    if #bookmarks == 1 then currentSlot = 1 end
+  
+    calcPages()
+    saveBookmarks()
+    displayBookmarks()
+    return #bookmarks
+  else
+    abort("Can't find the file to create the bookmark for")
+    return 0
+  end
 end
 
 -- Rename the bookmark at the specified slot
 function renameBookmark(slot, name)
-  if name:len() > maxChar then name = name:sub(1,maxChar) end
   if bookmarkExists(slot) then
-    bookmarks[slot]["name"] = name
+    bookmarks[slot]["name"] = parseName(name)
     saveBookmarks()
   else
     abort("Can't find the bookmark at slot " .. slot)
@@ -369,8 +390,8 @@ end
 function quickSave()
   if not active then
     loadBookmarks()
-    local slot = addBookmark(mp.get_property("filename"))
-    mp.osd_message("Saved new bookmark at slot " .. slot)
+    local slot = addBookmark()
+    if slot ~= 0 then mp.osd_message("Saved new bookmark at slot " .. slot) end
   end
 end
 
@@ -379,7 +400,7 @@ function quickLoad()
   if not active then
     loadBookmarks()
     local slot = #bookmarks
-    mp.osd_message("Loaded bookmark at slot " .. slot)
+    if slot ~= 0 then mp.osd_message("Loaded bookmark at slot " .. slot) end
     jumpToBookmark(slot)
   end
 end
@@ -391,6 +412,7 @@ function deleteBookmark(slot)
 
   calcPages()
   saveBookmarks()
+  displayBookmarks()
 end
 
 -- Jump to the specified bookmark
@@ -421,7 +443,7 @@ function displayBookmarks()
   -- Prepare the text to display and display it
   local display = "Bookmarks page " .. currentPage .. "/" .. maxPage .. ":"
   for i = startSlot, endSlot do
-    local btext = bookmarks[i]["name"] .. " @ " .. getTime(bookmarks[i]["pos"])
+    local btext = bookmarks[i]["name"]
     local selection = ""
     if i == currentSlot then
       selection = ">"
