@@ -53,10 +53,12 @@ local closeAfterLoad = true
 * `ENTER`: Confirm text input and save/rename the bookmark
 * `Any text character`: Type for the text input. Allows special characters, spaces, numbers. Does not allow letters with accents
 
-During text input, you can write %t or %p to input a timestamp in the name.
+During text input, you can write `%t` or `%p` to input a timestamp in the name.
 
-* %t is a timestamp in the format of hh:mm:ss.mmm
-* %p is a timestamp in the format of ssss.mmm
+* `%t` is a timestamp in the format of hh:mm:ss.mmm
+* `%p` is a timestamp in the format of ssss.mmm
+
+For example, `Awesome moment @ %t` will show up as `Awesome moment @ 00:13:41.673` in the menu
 
 #### When moving bookmarks
 * `ESC`: Cancel moving and return to the Bookmarker menu
