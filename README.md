@@ -1,8 +1,17 @@
-# Bookmarker Menu for mpv v1.1.0
+# Bookmarker Menu for mpv v1.2.0
 
 A bookmarker menu to manage all your bookmarks in MPV. This script is based on [mpv-bookmarker](https://github.com/nimatrueway/mpv-bookmark-lua-script) and has been rewritten to include a bookmarker menu. All of the code has been written from scratch, aside from the general file/JSON management utilities.
 
 **Warning:** The bookmarks created with this script are not compatible with those created with [mpv-bookmarker](https://github.com/nimatrueway/mpv-bookmark-lua-script).
+
+## New in version 1.2.0
+
+* Added a cursor to the Typer, allowing you to insert text in other places than the end of the line
+* Added the ability to change the filepath of a bookmark, in case you moved files to a different folder, or your external drive is suddenly assigned a different drive letter
+* Changed the way filepaths are saved and loaded, to accomodate the ability to edit them
+* Introduced version numbers to the bookmarks for potential backward compatibility
+* Because of this, all older bookmarks should still be compatible with version 1.2.0
+* Changed some of the messages and added a few more error messages
 
 ## Installation
 
@@ -71,3 +80,23 @@ For example, `Awesome moment @ %t` will show up as `Awesome moment @ 00:13:41.67
 ## Testing
 
 This has been tested on Windows. In theory, it should also work for Unix systems, but it hasn't been tested on those.
+
+## Changelog
+
+#### Version 1.2.0
+
+* Added a cursor to the Typer, allowing you to insert text in other places than the end of the line
+* Added the ability to change the filepath of a bookmark, in case you moved files to a different folder, or your external drive is suddenly assigned a different drive letter
+* Changed the way filepaths are saved and loaded, to accomodate the ability to edit them
+* Introduced version numbers to the bookmarks for potential backward compatibility
+* Because of this, all older bookmarks should still be compatible with version 1.2.0
+* Changed some of the messages and added a few more error messages
+
+#### Version 1.1.0
+
+* Added more functionality to the Typer
+* I should've kept better track of changes
+
+#### Version 1.0.0
+
+* Initial release
