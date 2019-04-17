@@ -31,10 +31,16 @@ Open `bookmarker-menu.lua` in a text editor, and you can easily change these set
 -- Maximum number of characters for bookmark name
 local maxChar = 100
 -- Number of bookmarks to be displayed per page
-local bookmarksPerPage = 10
+local bookmarksPerPage = 25
 -- Whether to close the Bookmarker menu after loading a bookmark
 local closeAfterLoad = true
+-- The filename for the bookmarks file
+local bookmarkerName = "bookmarker.json"
+-- The rate (in seconds) at which the bookmarker needs to refresh its interface, lower is more frequent
+local rate = 1.5
 ```
+
+It's recommended not to touch `bookmarkerName` but it's there to be changed in case you already have a file called `bookmarker.json` and don't want that to be overwritten
 
 ## Usage
 
@@ -52,24 +58,32 @@ local closeAfterLoad = true
 * `LEFT/RIGHT`: Navigate through pages of bookmarks
 * `ENTER`: Load the currently selected bookmark
 * `DELETE`: Delete the currently selected bookmark
+* `s`: Save a bookmark of the current media file and position
+* `shift+s`: Save a bookmark of the current media file and position (shows a text input, allowing you to type)
 * `r`: Rename the currently selected bookmark (shows a text input, allowing you to type)
-* `s`: Save a bookmark of the current file and position
-* `shift+s`: Save a bookmark of the current file and position (shows a text input, allowing you to type)
+* `f`: Change the filepath of the currently selected bookmark (shows a text input, allowing you to type)
 * `m`: Move the currently selected bookmark
 
+Changing the filepath of a bookmark is intended to quickly change a bookmark in case you moved the media file to a different folder, or perhaps the drive letter of your external drive changed.
+
 #### When allowing text input
+
+The Typer (as I named it) allows you to type text for various ends, like renaming a bookmark or changing its filepath.
+
 * `ESC`: Cancel text input and return to the Bookmarker menu
 * `ENTER`: Confirm text input and save/rename the bookmark
+* `LEFT/RIGHT`: Move the cursor through the text, allowing you to input text in different places
 * `Any text character`: Type for the text input. Allows special characters, spaces, numbers. Does not allow letters with accents
 
-During text input, you can write `%t` or `%p` to input a timestamp in the name.
+During text input for a bookmark's name, you can write `%t` or `%p` to input a timestamp in the name. (Note: This does not work for a bookmark's filepath.)
 
 * `%t` is a timestamp in the format of hh:mm:ss.mmm
-* `%p` is a timestamp in the format of ssss.mmm
+* `%p` is a timestamp in the format of S.mmm
 
 For example, `Awesome moment @ %t` will show up as `Awesome moment @ 00:13:41.673` in the menu
 
 #### When moving bookmarks
+
 * `ESC`: Cancel moving and return to the Bookmarker menu
 * `ENTER`: Confirm moving the bookmark
 * `m`: Confirm moving the bookmark
@@ -90,12 +104,24 @@ This has been tested on Windows. In theory, it should also work for Unix systems
 * Changed the way filepaths are saved and loaded, to accomodate the ability to edit them
 * Introduced version numbers to the bookmarks for potential backward compatibility
 * Because of this, all older bookmarks should still be compatible with version 1.2.0
+* The default bookmark name now uses `media-title` instead of `filename`
 * Changed some of the messages and added a few more error messages
 
 #### Version 1.1.0
 
-* Added more functionality to the Typer
-* I should've kept better track of changes
+* Added minor property expansion to the Typer
+* You can type `%t` or `%p` for the bookmark name and have it expand into the time or position respectively
+* Added checks for all faulty behavior that I could think of and added error messages for those situations
+* Cleaned up the code a bit
+
+#### Version 1.0.2
+
+* Added keypad keys to the Typer
+* It's possible to commit moving files with the keypad enter key as well
+
+#### Version 1.0.1
+
+* Added the option to close the bookmarker menu after loading a bookmark
 
 #### Version 1.0.0
 
