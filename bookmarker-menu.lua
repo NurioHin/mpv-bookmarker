@@ -1,10 +1,10 @@
--- // Bookmarker Menu v1.3.0 for mpv \\ --
--- See readme.md for instructions
+-- // Bookmarker Menu v1.3.1 for mpv \\ --
+-- See README.md for instructions
 
 -- Maximum number of characters for bookmark name
 local maxChar = 100
 -- Number of bookmarks to be displayed per page
-local bookmarksPerPage = 40
+local bookmarksPerPage = 10
 -- Whether to close the Bookmarker menu after loading a bookmark
 local closeAfterLoad = true
 -- Whether to close the Bookmarker menu after replacing a bookmark
@@ -20,6 +20,8 @@ local bookmarkerName = "bookmarker.json"
 
 -- All the "global" variables and utilities; don't touch these
 local utils = require 'mp.utils'
+local styleOn = mp.get_property("osd-ass-cc/0")
+local styleOff = mp.get_property("osd-ass-cc/1")
 local bookmarks = {}
 local currentSlot = 0
 local currentPage = 1
@@ -97,9 +99,8 @@ local typerControls = {
 }
 
 -- All standard keys for the Typer
-local typerKeys = {"a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","r","s","t","u","v","w","x","y","z","A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z","1","2","3","4","5","6","7","8","9","0","!","@","$","%","^","&","*","(",")","-","_","=","+","[","]","{","}","\\","|",":","'","\"",",",".","<",">","/","?","`","~"}
--- For some reason, semicolon is not possible
--- This does allow us to use the semicolon for the typing cursor, at least
+local typerKeys = {"a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","r","s","t","u","v","w","x","y","z","A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z","1","2","3","4","5","6","7","8","9","0","!","@","$","%","^","&","*","(",")","-","_","=","+","[","]","{","}","\\","|",";",":","'","\"",",",".","<",">","/","?","`","~"}
+-- For some reason, semicolon is not possible, but it's listed there just in case anyway
 
 local typerText = ""
 local typerPos = 0
@@ -148,8 +149,9 @@ function typer(s)
       typerPos = typerPos - 1
     end
   elseif s == "delete" then
-    typerText = ""
-    typerPos = 0
+    if typerPos < typerText:len() then
+      typerText = typerText:sub(1, typerPos) .. typerText:sub(typerPos + 2)
+    end
   else
     if mode == "filepath" or typerText:len() < maxChar then
       typerText = typerText:sub(1, typerPos) .. s .. typerText:sub(typerPos + 1)
@@ -160,15 +162,15 @@ function typer(s)
   -- Enter custom script and display message here
   local preMessage = "Enter a bookmark name:"
   if mode == "save" then
-    preMessage = "Save a new bookmark with custom name:"
+    preMessage = styleOn.."{\\b1}Save a new bookmark with custom name:{\\b0}"..styleOff
   elseif mode == "replace" then
-    preMessage = "Type \"y\" to replace the following bookmark:\n"..bookmarks[currentSlot]["name"]
+    preMessage = styleOn.."{\\b1}Type \"y\" to replace the following bookmark:{\\b0}\n"..displayName(bookmarks[currentSlot]["name"])..styleOff
   elseif mode == "delete" then
-    preMessage = "Type \"y\" to delete the following bookmark:\n"..bookmarks[currentSlot]["name"]
+    preMessage = styleOn.."{\\b1}Type \"y\" to delete the following bookmark:{\\b0}\n"..displayName(bookmarks[currentSlot]["name"])..styleOff
   elseif mode == "rename" then
-    preMessage = "Rename an existing bookmark:"
+    preMessage = styleOn.."{\\b1}Rename an existing bookmark:{\\b0}"..styleOff
   elseif mode == "filepath" then
-    preMessage = "Change the bookmark's filepath:"
+    preMessage = styleOn.."{\\b1}Change the bookmark's filepath:{\\b0}"..styleOff
   end
 
   local postMessage = ""
@@ -179,7 +181,7 @@ function typer(s)
   end
   postMessage = postMessage:sub(1,postMessage:len()-1)
 
-  mp.osd_message(preMessage.."\n"..postMessage:sub(1,split)..";"..postMessage:sub(split+1), 9999)
+  mp.osd_message(preMessage.."\n"..postMessage:sub(1,split)..styleOn.."{\\c&H00FFFF&}{\\b1}|{\\r}"..styleOff..postMessage:sub(split+1), 9999)
 end
 
 -- // Mover \\ --
@@ -211,7 +213,7 @@ function moverStart()
     activateControls("mover", moverControls, moverFlags)
     displayBookmarks()
   else
-    abort("Can't find the bookmark at slot "..currentSlot)
+    abort(styleOn.."{\\c&H0000FF&}{\\b1}Can't find the bookmark at slot "..currentSlot)
   end
 end
 
@@ -387,7 +389,7 @@ function jumpPage(i)
   displayBookmarks()
 end
 
--- Parses a bookmark name, also trimming it
+-- Parses a bookmark name for storing, also trimming it
 -- Replaces %t with the timestamp of the bookmark
 -- Replaces %p with the time position of the bookmark
 function parseName(name)
@@ -395,6 +397,14 @@ function parseName(name)
   if mode == "rename" then pos = bookmarks[currentSlot]["pos"] else pos = mp.get_property_number("time-pos") end
   name, _ = name:gsub("%%t", parseTime(pos))
   name, _ = name:gsub("%%p", pos)
+  name = trimName(name)
+  return name
+end
+
+-- Parses a bookmark name for displaying, also trimming it
+-- Replaces all { with an escaped { so it won't be interpreted as a tag
+function displayName(name)
+  name, _ = name:gsub("{", "\\{")
   name = trimName(name)
   return name
 end
@@ -493,7 +503,7 @@ end
 function addBookmark(name)
   local bookmark = makeBookmark(name)
   if bookmark == nil then
-    abort("Can't find the media file to create the bookmark for")
+    abort(styleOn.."{\\c&H0000FF&}{\\b1}Can't find the media file to create the bookmark for")
     return -1
   end
   table.insert(bookmarks, bookmark)
@@ -514,7 +524,7 @@ function editBookmark(slot, property, value)
     bookmarks[slot][property] = value
     saveBookmarks()
   else
-    abort("Can't find the bookmark at slot "..slot)
+    abort(styleOn.."{\\c&H0000FF&}{\\b1}Can't find the bookmark at slot "..slot)
     return -1
   end
 end
@@ -528,18 +538,18 @@ function replaceBookmark(slot)
   if bookmarkExists(slot) then
     local bookmark = makeBookmark(bookmarks[slot]["name"])
     if bookmark == nil then
-      abort("Can't find the media file to create the bookmark for")
+      abort(styleOn.."{\\c&H0000FF&}{\\b1}Can't find the media file to create the bookmark for")
       return -1
     end
     bookmarks[slot] = bookmark
     saveBookmarks()
     if closeAfterReplace then
-      abort("Successfully replaced bookmark:\n"..bookmark["name"])
+      abort(styleOn.."{\\c&H00FF00&}{\\b1}Successfully replaced bookmark:{\\r}\n"..displayName(bookmark["name"]))
       return -1
     end
     return 1
   else
-    abort("Can't find the bookmark at slot "..slot)
+    abort(styleOn.."{\\c&H0000FF&}{\\b1}Can't find the bookmark at slot "..slot)
     return -1
   end
 end
@@ -574,6 +584,7 @@ function deleteBookmark(slot)
 end
 
 -- Jump to the specified bookmark
+-- This means loading it, reading it, and jumping to the file + position in the bookmark
 function jumpToBookmark(slot)
   if bookmarkExists(slot) then
     local bookmark = bookmarks[slot]
@@ -583,12 +594,12 @@ function jumpToBookmark(slot)
       else
         mp.commandv("loadfile", parsePath(bookmark["path"]), "replace", "start="..bookmark["pos"])
       end
-      if closeAfterLoad then abort("Successfully loaded bookmark:\n"..bookmark["name"]) end
+      if closeAfterLoad then abort(styleOn.."{\\c&H00FF00&}{\\b1}Successfully found file for bookmark:{\\r}\n"..displayName(bookmark["name"])) end
     else
-      abort("Can't find file for bookmark:\n" .. bookmark["name"])
+      abort(styleOn.."{\\c&H0000FF&}{\\b1}Can't find file for bookmark:\n" .. displayName(bookmark["name"]))
     end
   else
-    abort("Can't find the bookmark at slot " .. slot)
+    abort(styleOn.."{\\c&H0000FF&}{\\b1}Can't find the bookmark at slot " .. slot)
   end
 end
 
@@ -599,15 +610,16 @@ function displayBookmarks()
   local endSlot = getLastSlotOnPage(currentPage)
 
   -- Prepare the text to display and display it
-  local display = "Bookmarks page " .. currentPage .. "/" .. maxPage .. ":"
+  local display = styleOn .. "{\\b1}Bookmarks page " .. currentPage .. "/" .. maxPage .. ":{\\b0}"
   for i = startSlot, endSlot do
-    local btext = bookmarks[i]["name"]
+    local btext = displayName(bookmarks[i]["name"])
     local selection = ""
     if i == currentSlot then
-      selection = ">"
+      selection = "{\\b1}{\\c&H00FFFF&}>"
       if mode == "move" then btext = "----------------" end
+      btext = btext
     end
-    display = display .. "\n" .. selection .. i .. ": " .. btext
+    display = display .. "\n" .. selection .. i .. ": " .. btext .. "{\\r}"
   end
   mp.osd_message(display, rate)
 end
@@ -645,11 +657,11 @@ end
 -- Starts the Typer with custom scripts preceding it
 function typerStart()
   if (mode == "save" or mode=="replace") and mp.get_property("path") == nil then
-    abort("Can't find the media file to create the bookmark for")
+    abort(styleOn.."{\\c&H0000FF&}{\\b1}Can't find the media file to create the bookmark for")
     return -1
   end
   if (mode == "replace" or mode == "rename" or mode == "filepath" or mode == "delete") and not bookmarkExists(currentSlot) then
-    abort("Can't find the bookmark at slot "..currentSlot)
+    abort(styleOn.."{\\c&H0000FF&}{\\b1}Can't find the bookmark at slot "..currentSlot)
     return -1
   end
   if (mode == "replace" and not confirmReplace) or (mode == "delete" and not confirmDelete) then

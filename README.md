@@ -1,23 +1,21 @@
-# Bookmarker Menu for mpv v1.3.0
+# Bookmarker Menu for mpv v1.3.1
 
 A bookmarker menu to manage all your bookmarks in MPV. This script is based on [mpv-bookmarker](https://github.com/nimatrueway/mpv-bookmark-lua-script) and has been rewritten to include a bookmarker menu. All of the code has been written from scratch, aside from the general file/JSON management utilities.
 
 **Notice:** Bookmarks created with [mpv-bookmarker](https://github.com/nimatrueway/mpv-bookmark-lua-script) can be loaded by this script and will be automatically converted. However, the bookmarks created with this script are not compatible with those created with [mpv-bookmarker](https://github.com/nimatrueway/mpv-bookmark-lua-script).
 
-## New in version 1.3.0
+## New in version 1.3.1
 
-* Added the ability to replace bookmarks with the currently playing file and position (See Usage for more info)
-* Bookmarks from [mpv-bookmarker](https://github.com/nimatrueway/mpv-bookmark-lua-script) can now be loaded and will be automatically converted
-* Certain keys are now repeated while holding the button, eliminating the need to constantly tap the same button
-* Added the option to automatically close the menu after replacing a bookmark
-* Added the option whether to ask for confirmation before replacing/deleting a bookmark
-* Added more error messages
-* Slightly changed up how forced controls are programmed and activated to accomodate the repeated keys
-* Slightly changed up how bookmarks are created in the code to accomodate replacing them
+* `DEL` button now deletes the character after the cursor instead of clearing the whole string
+* Styling added for certain lines
+* Currently selected line is now bold and yellow
+* Typer cursor changed from `;` to a bold and yellow `|`
 
 ## Planned features
 
+* Allow custom tags for bookmark styling
 * Undo function
+* Redo function
 
 ## Installation
 
@@ -37,7 +35,7 @@ Open `bookmarker-menu.lua` in a text editor, and you can easily change these set
 -- Maximum number of characters for bookmark name
 local maxChar = 100
 -- Number of bookmarks to be displayed per page
-local bookmarksPerPage = 40
+local bookmarksPerPage = 10
 -- Whether to close the Bookmarker menu after loading a bookmark
 local closeAfterLoad = true
 -- Whether to close the Bookmarker menu after replacing a bookmark
@@ -52,7 +50,7 @@ local rate = 1.5
 local bookmarkerName = "bookmarker.json"
 ```
 
-It's recommended not to touch `bookmarkerName` but it's there to be changed in case you already have a file called `bookmarker.json` and don't want that to be overwritten
+It's recommended not to touch `bookmarkerName` but it's there to be changed in case you already have a file called `bookmarker.json` and don't want that to be overwritten, or to change it to `bookmarks.json` to convert bookmarks created by [mpv-bookmarker](https://github.com/nimatrueway/mpv-bookmark-lua-script).
 
 ## Usage
 
@@ -88,7 +86,7 @@ The Typer (as I named it) allows you to type text for various ends, like renamin
 * `ENTER`: Confirm text input and save/rename the bookmark
 * `LEFT/RIGHT`: Move the cursor through the text, allowing you to input text in different places (Hold to quickly scroll)
 * `BACKSPACE`: Remove the character preceding the cursor (Hold to rapidly remove multiple)
-* `DELETE`: Clear the whole text field
+* `DELETE`: Remove the character after the cursor (Hold to rapidly remove multiple)
 * `Any text character`: Type for the text input. Allows special characters, spaces, numbers. Does not allow letters with accents (Hold to rapidly add characters)
 
 During text input for a bookmark's name, you can write `%t` or `%p` to input a timestamp in the name. (Note: This does not work for a bookmark's filepath.)
@@ -112,6 +110,13 @@ For example, `Awesome moment @ %t` will show up as `Awesome moment @ 00:13:41.67
 This has been tested on Windows. In theory, it should also work for Unix systems, but it hasn't been tested on those.
 
 ## Changelog
+
+#### Version 1.3.1
+
+* `DEL` button now deletes the character after the cursor instead of clearing the whole string
+* Styling added for certain lines
+* Currently selected line is now bold and yellow
+* Typer cursor changed from `;` to a bold and yellow `|`
 
 #### Version 1.3.0
 
