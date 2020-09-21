@@ -588,7 +588,7 @@ end
 function jumpToBookmark(slot)
   if bookmarkExists(slot) then
     local bookmark = bookmarks[slot]
-    if fileExists(bookmark["path"]) then
+    if string.sub(bookmark["path"], 1, 4) == "http" or fileExists(bookmark["path"]) then
       if parsePath(mp.get_property("path")) == bookmark["path"] then
         mp.set_property_number("time-pos", bookmark["pos"])
       else
